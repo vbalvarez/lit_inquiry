@@ -189,7 +189,7 @@ def main():
     total_articles = 0
     
     all_data = []
-    ye_to_all = False
+    yes_to_all = False
     
     for keyword in keywords:
         print(f"Searching for {keyword}...")

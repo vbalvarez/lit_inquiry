@@ -10,12 +10,12 @@ from fitz import open as fitz_open
 
 class PDFHighlighter:
     # Initial setup
-    def __init__(self, pdf_folder, stata_data_path, keywords_path):
+    def __init__(self, pdf_folder, data_path, keywords_path):
         self.tokenizer = nltk.data.load('tokenizers/punkt/english.pickle') # Tokenizer for context
         self.keywords = self.load_keywords(keywords_path) # Load keywords
         self.filenames = glob(os.path.join(pdf_folder, "*.pdf")) # Get filenames
-        self.df_ref = pd.read_stata(stata_data_path) # Load Stata database
-        self.df_ref['DOI_short'] = self.df_ref['DOI'].apply(lambda x: x[8:])
+        self.df_ref = df[df['DOI_link'] != 'NA'] # Load database
+        self.df_ref['DOI_short'] = self.df_ref['DOI_link'].apply(lambda x: x[8:])
 
     # Loads keywords given the txt file
     def load_keywords(self, path):
@@ -155,7 +155,7 @@ class PDFHighlighter:
         # Returns DOIs, instances, and words
         return [DOIs, instance_pages, key_values, context]
     
-    # Formats recorde info given from highlighter function
+    # Formats record info given from highlighter function
     def format_record(self, pdf):
         record = self.highlighter(pdf)
 
@@ -188,12 +188,12 @@ class PDFHighlighter:
     # Adds additional information to the dataframe
     def add_metadata(self, df):
         # Create metadata columns
-        df['title'] = df['DOIs'].map(self.df_ref.groupby('DOI_short')['title'].first())
-        df['DOIs'] = df['title'].map(self.df_ref.groupby('title')['DOI'].first())
-        df['author'] = df['title'].map(self.df_ref.groupby('title')['author'].first())
-        df['year_pub'] = df['title'].map(self.df_ref.groupby('title')['year_pub'].first())
-        df['month_pub'] = df['title'].map(self.df_ref.groupby('title')['month_pub'].first())
-    
+        df['title'] = df['DOIs'].map(self.df_ref.groupby('DOI_short')['Title'].first())
+        df['DOIs'] = df['title'].map(self.df_ref.groupby('Title')['DOI_link'].first())
+        df['author'] = df['title'].map(self.df_ref.groupby('Title')['Authors'].first())
+        # df['year_pub'] = df['title'].map(self.df_ref.groupby('Title')['year_pub'].first())
+        # df['month_pub'] = df['title'].map(self.df_ref.groupby('Title')['month_pub'].first())
+
         return df
 
 # Command call for directory and files
@@ -203,7 +203,7 @@ def parse_args():
                         help='Path to keywords file')
     parser.add_argument('-a', '--articledb', type=str, default='./all_articles.dta',
                         help='Path to articles database')
-    parser.add_argument('-p', '--pdf_folder', type=str, default='./all_pdfs',
+    parser.add_argument('-f', '--pdf_folder', type=str, default='./all_pdfs',
                         help='Path to pdfs folder (default: current directory)')
     return parser.parse_args()
 
@@ -214,7 +214,7 @@ def main():
     pdf_highlighter = PDFHighlighter(args.pdf_folder, args.articledb, args.keywords)
 
     df = pdf_highlighter.final_df()
-    df.to_csv('key_words.csv', index=False)
+    df.to_csv('key_words_freq.csv', index=False)
 
 if __name__ == "__main__":
     main()

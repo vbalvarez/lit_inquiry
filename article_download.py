@@ -58,7 +58,7 @@ def download_pdfs(df, folder_path):
 def main():
     args = parse_args()
     
-    df = pd.read_stata(args.articledb)
+    df = pd.read_csv(args.articledb)
     download_pdfs(df, args.folder)
 
 if __name__ == "__main__":

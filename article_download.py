@@ -26,7 +26,8 @@ def parse_args():
 def download_pdfs(df, folder_path):
     os.makedirs(folder_path, exist_ok=True)
     os.chmod(folder_path, mode = 0o777)
-
+    
+    # Browser options
     browser_options = ChromeOptions()
     browser_options.add_experimental_option('prefs', {
         "download.default_directory": folder_path, # Change default directory for downloads
@@ -36,11 +37,20 @@ def download_pdfs(df, folder_path):
     })
     service = ChromeService(ChromeDriverManager().install())
     driver = webdriver.Chrome(service=service, options=browser_options)
-        
-    for doi in df.DOI:
-        print("Downloading file from link: {}".format("https://pubs.aeaweb.org/doi/pdfplus/" + doi))
-        driver.get("https://pubs.aeaweb.org/doi/pdfplus/" + doi)
-        sleep(2)
+
+    aea_df = df[df['Publisher'] == 'American Economic *']
+    
+    # Loop over DOIs and get files
+    for doi in aea_df['DOI_link']:
+        if doi != "NA":
+            if 'https://' not in doi:
+                print("Downloading file from link: {}".format("https://pubs.aeaweb.org/doi/pdfplus/" + doi))
+                driver.get("https://pubs.aeaweb.org/doi/pdfplus/" + doi)
+                sleep(2)
+            else:
+                print("Downloading file from link: {}".format(doi))
+                driver.get(doi)
+                sleep(2)
         
     driver.quit()
 

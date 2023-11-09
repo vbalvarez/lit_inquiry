@@ -16,7 +16,7 @@ class PDFHighlighter:
         self.filenames = glob(os.path.join(pdf_folder, "*.pdf")) # Get filenames
         df = pd.read_csv(data_path)
         self.df_ref = df[df['DOI_link'] != 'NA'] # Load database
-        self.df_ref['DOI_short'] = self.df_ref['DOI_link'].apply(lambda x: x[8:])
+        #self.df_ref['DOI_short'] = self.df_ref['DOI_link'].apply(lambda x: x[8:])
 
     # Loads keywords given the txt file
     def load_keywords(self, path):
@@ -189,7 +189,7 @@ class PDFHighlighter:
     # Adds additional information to the dataframe
     def add_metadata(self, df):
         # Create metadata columns
-        df['title'] = df['DOIs'].map(self.df_ref.groupby('DOI_short')['Title'].first())
+        df['title'] = df['DOIs'].map(self.df_ref.groupby('DOI_link')['Title'].first())
         df['DOIs'] = df['title'].map(self.df_ref.groupby('Title')['DOI_link'].first())
         df['author'] = df['title'].map(self.df_ref.groupby('Title')['Authors'].first())
         # df['year_pub'] = df['title'].map(self.df_ref.groupby('Title')['year_pub'].first())

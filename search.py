@@ -24,43 +24,81 @@ def load_from_file(filepath):
 
 
 def get_scholar_data_for_keyword(keyword, api_key, year_lo, year_hi, cites=None, test_mode=False, yes_to_all=False):
-    url = "https://serpapi.com/search"
-    all_results = []
-    start = 0
-    page_count = 0  # Counter to keep track of the number of pages fetched
+    """
+    Fetches scholarly data for a given keyword using the SERP API.
     
+    Parameters:
+    - keyword (str): The keyword to search for.
+    - api_key (str): The API key for SERP API.
+    - year_lo (int): The starting year for the search range.
+    - year_hi (int): The ending year for the search range.
+    - cites (str, optional): The citation ID to filter results. Defaults to None.
+    - test_mode (bool, optional): If True, limits the search to 2 pages. Defaults to False.
+    - yes_to_all (bool, optional): If True, fetches all results without user confirmation. Defaults to False.
+    
+    Returns:
+    - list: A list of dictionaries containing scholarly data.
+    - bool: A flag indicating if the user chose 'Yes to All' option.
+    """
+    
+    # Base URL for the SERP API
+    url = "https://serpapi.com/search"
+    
+    # List to store all the results
+    all_results = []
+    
+    # Initialize the starting point for pagination
+    start = 0
+    
+    # Counter to keep track of the number of pages fetched
+    page_count = 0  
+    
+    # Infinite loop to fetch results until there are no more pages or user stops the process
     while True:
+        # Parameters for the API request
         params = {
-            "q": keyword,
-            "engine": "google_scholar",
-            "api_key": api_key,
-            "start": start,
+            "q": keyword,  # Query keyword
+            "engine": "google_scholar",  # Specify the search engine as Google Scholar
+            "api_key": api_key,  # API key
+            "start": start,  # Pagination start
             "num": 20,  # Number of results per page
-            "as_ylo": year_lo,
-            "as_yhi": year_hi
+            "as_ylo": year_lo,  # Starting year
+            "as_yhi": year_hi  # Ending year
         }
         
+        # If cites ID is provided, add it to the parameters
         if cites:
             params["cites"] = cites
         
+        # Make the API request
         response = requests.get(url, params=params)
+        # Raise an exception if the request was unsuccessful
         response.raise_for_status()
         
+        # Parse the JSON response
         data = response.json()
+        
+        # Extract the organic results from the response
         results = data.get('organic_results', [])
         
+        # If there are no results, break out of the loop
         if not results:
             break
         
+        # If it's the first page, not in test mode, and user hasn't chosen 'Yes to All', ask for user confirmation
         if not test_mode and page_count == 0 and not yes_to_all:
+            # Get the total number of results
             total_results = data.get('search_information', {}).get('total_results', 0)
             print(f"\nTotal results found: {total_results}")
+            
+            # Ask the user if they want to continue fetching results
             user_input = input("Do you want to continue? (Yes/No/Yes to All): ")
             if user_input.lower() == 'yes to all':
                 yes_to_all = True
             elif user_input.lower() != 'yes':
                 break
         
+        # Iterate over each result and extract relevant data
         for result in results:
             entry = {
                 "Keyword": keyword,
@@ -82,14 +120,21 @@ def get_scholar_data_for_keyword(keyword, api_key, year_lo, year_hi, cites=None,
                 "SerpAPI Related Pages Link": result.get('inline_links', {}).get('serpapi_related_pages_link'),
                 "SerpAPI Scholar Link (Versions)": result.get('inline_links', {}).get('versions', {}).get('serpapi_scholar_link')
             }
+            
+            # Append the extracted data to the results list
             all_results.append(entry)
         
-        start += 20  # Increment by the number of results per page
-        page_count += 1  # Increment the page counter
+        # Increment the start value for pagination by the number of results per page
+        start += 20  
         
-        if test_mode and page_count >= 2:  # Limit to 2 pages in test mode
+        # Increment the page counter
+        page_count += 1  
+        
+        # If in test mode and fetched 2 pages, break out of the loop
+        if test_mode and page_count >= 2:
             break
 
+    # Return the results and the 'Yes to All' flag
     return all_results, yes_to_all
 
 
@@ -107,8 +152,22 @@ def clean_df(d):
 
     # Clean author string
     d['Authors'] = d['Authors'].apply(lambda x: x.split(' -')[0])
+    
+    def process_link(link):
+        if link:
+            if 'id=' in link:
+                return link.split('id=')[1]
+            elif 'doi/' in link:
+                return link.split('doi/')[1]
+            else:
+                return link  # Return the original link if 'id=' and 'doi/' are not found
+        else:
+            return link  # Return None if link is None
+    
+    # Get DOI from link
+    d['DOI_link'] = d['Link'].apply(process_link)
 
-    df.fillna("NA", inplace=True)
+    d.fillna("NA", inplace=True)
 
 
 def main():

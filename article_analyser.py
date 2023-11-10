@@ -15,7 +15,8 @@ class PDFHighlighter:
         self.keywords = self.load_keywords(keywords_path) # Load keywords
         self.filenames = glob(os.path.join(pdf_folder, "*.pdf")) # Get filenames
         df = pd.read_csv(data_path) # Load database
-        self.df_ref = df[pd.notna(df['DOI_link'])] 
+        self.df_ref = df[pd.notna(df['DOI_link'])]
+        self.df_ref['DOIs'] = df['DOI_link'].astype(str).apply(lambda x: x.replace('/', '_'))
         #self.df_ref['DOI_short'] = self.df_ref['DOI_link'].apply(lambda x: x[8:])
 
     # Loads keywords given the txt file
@@ -197,8 +198,8 @@ class PDFHighlighter:
     # Adds additional information to the dataframe
     def add_metadata(self, df):
         # Create metadata columns
-        df['title'] = df['DOIs'].map(self.df_ref.groupby('DOI_link')['Title'].first())
-        df['DOIs'] = df['title'].map(self.df_ref.groupby('Title')['DOI_link'].first())
+        df['title'] = df['DOIs'].map(self.df_ref.groupby('DOIs')['Title'].first())
+        df['DOIs'] = df['title'].map(self.df_ref.groupby('Title')['DOIs'].first())
         df['author'] = df['title'].map(self.df_ref.groupby('Title')['Authors'].first())
         # df['year_pub'] = df['title'].map(self.df_ref.groupby('Title')['year_pub'].first())
         # df['month_pub'] = df['title'].map(self.df_ref.groupby('Title')['month_pub'].first())

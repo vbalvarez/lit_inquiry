@@ -94,7 +94,7 @@ class PDFHighlighter:
                         curr_instance_pages.append(page_num + 1)
 
                         # Add instance of DOI
-                        curr_DOIs.append(doc.split('/')[-1].replace(".pdf", ""))
+                        curr_DOIs.append(doc)
 
                         # Add word to list
                         curr_key_values.append(word)

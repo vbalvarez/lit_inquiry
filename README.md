@@ -114,6 +114,6 @@ Here is the data schema for the `key_words_freq.csv` DataFrame in a table format
 | DOIs | str | `10.1257_app.1.4.34` | DOI for the article |
 | key_values | str | `LATE *U` | Word searched |
 | Pages | int | `0` | Page of instance |
-| Context | str | `nan` | Context around the word |
+| Context | str | `Parent-Child Correlation in BehaviorA. Monotonicity of the s teady- state d istribution of...` | Context around the word |
 | title | str | `Peer effects in the workplace: Evidence from random groupings in professional golf tournaments` | Title of the article |
 | author | str | `J Guryan, K Kroft, MJ Notowidigdo` | Author(s) of the article |

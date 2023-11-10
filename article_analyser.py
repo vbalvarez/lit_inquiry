@@ -14,8 +14,8 @@ class PDFHighlighter:
         self.tokenizer = nltk.data.load('tokenizers/punkt/english.pickle') # Tokenizer for context
         self.keywords = self.load_keywords(keywords_path) # Load keywords
         self.filenames = glob(os.path.join(pdf_folder, "*.pdf")) # Get filenames
-        df = pd.read_csv(data_path)
-        self.df_ref = df[df['DOI_link'] != 'NA'] # Load database
+        df = pd.read_csv(data_path) # Load database
+        self.df_ref = df[pd.notna(df['DOI_link'])] 
         #self.df_ref['DOI_short'] = self.df_ref['DOI_link'].apply(lambda x: x[8:])
 
     # Loads keywords given the txt file

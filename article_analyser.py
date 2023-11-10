@@ -103,7 +103,7 @@ class PDFHighlighter:
                         curr_instance_pages.append(page_num + 1)
 
                         # Add instance of DOI
-                        curr_DOIs.append(process_doc_name(doc))
+                        curr_DOIs.append(process_doc_name(doc).replace(".pdf", ""))
 
                         # Add word to list
                         curr_key_values.append(word)
@@ -153,7 +153,7 @@ class PDFHighlighter:
                 instance_pages.append(0)
 
                 # Add DOI
-                DOIs.append(doc.split('/')[-1].replace(".pdf", ""))
+                DOIs.append(process_doc_name(doc).replace(".pdf", ""))
 
                 # Add word
                 key_values.append(word)       

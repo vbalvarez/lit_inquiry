@@ -12,13 +12,13 @@ The programs can also be used separately. Here's the breakdown of the function o
 In order to use this repo, you first need to clone it with:
 
 ```bash
-!git clone https://github.com/vbalvarez/lit_inquiry
+git clone https://github.com/vbalvarez/lit_inquiry
 ```
 
 Then, you'll have to change your directory, so you can run all the scripts more easily:
 
 ```bash
-%cd lit_inquiry
+cd lit_inquiry
 ```
 
 # search.py
@@ -37,12 +37,7 @@ The output of this script will be a csv file `serp_articles_data.csv`.
 The standard call for this script would be:
 
 ```bash
-%run -i 'search.py' -k 'PATH_TO_KEYWORDS' -j 'PATH_TO_JOURNALS' -a '280d25d6d2bbc50f74ba7b2797beda29d9a6afaeb0d6ee1ac1b73b79411d8a21'
-```
-*Note:* Here we use the command %run -i so we can interact with the script outside the terminal and demonstrate it running. If you are calling this within the terminal, you only need the code below. And this goes for any bash code on this PDF.
-
-```bash
-!python3 search.py -k PATH_TO_KEYWORDS -j PATH_TO_JOURNALS -a 280d25d6d2bbc50f74ba7b2797beda29d9a6afaeb0d6ee1ac1b73b79411d8a21
+python3 search.py -k PATH_TO_KEYWORDS -j PATH_TO_JOURNALS -a 280d25d6d2bbc50f74ba7b2797beda29d9a6afaeb0d6ee1ac1b73b79411d8a21
 ```
 
 Then, this is the schema for the output of the script:
@@ -85,7 +80,7 @@ The output of the script is the folder with all the articles downloaded.
 Then, to call it in the terminal, type:
 
 ```bash
-!python3 article_download.py -a PATH_TO_DATABASE -f PATH_TO_FOLDER
+python3 article_download.py -a PATH_TO_DATABASE -f PATH_TO_FOLDER
 ```
 ---
 
@@ -102,7 +97,7 @@ Its parameters are:
 To call it in the terminal, you'll type:
 
 ```bash
-!python3 article_analyser.py -k PATH_TO_KEYWORDS -a PATH_TO_DATAFRAME -f PATH_TO_FOLDER
+python3 article_analyser.py -k PATH_TO_KEYWORDS -a PATH_TO_DATAFRAME -f PATH_TO_FOLDER
 ```
 
 The following is the schema for this script's output:

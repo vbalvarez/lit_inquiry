@@ -194,12 +194,11 @@ class PDFHighlighter:
         return self.add_metadata(df)
 
 
-
     # Adds additional information to the dataframe
     def add_metadata(self, df):
         # Create metadata columns
         df['title'] = df['DOIs'].map(self.df_ref.groupby('DOIs')['Title'].first())
-        df['DOIs'] = df['title'].map(self.df_ref.groupby('Title')['DOIs'].first())
+        # df['DOIs'] = df['title'].map(self.df_ref.groupby('Title')['DOIs'].first())
         df['author'] = df['title'].map(self.df_ref.groupby('Title')['Authors'].first())
         # df['year_pub'] = df['title'].map(self.df_ref.groupby('Title')['year_pub'].first())
         # df['month_pub'] = df['title'].map(self.df_ref.groupby('Title')['month_pub'].first())

@@ -88,13 +88,21 @@ class PDFHighlighter:
                     
                     matches = pattern.finditer(page_text)
 
+                    def process_doc_name(doc):
+                            # Check if 'doc' is a path and extract the file name
+                            if '/' in doc or '\\' in doc:
+                                file_name = os.path.basename(doc)
+                                return file_name
+                            else:
+                                return doc
+
                     # Loop through all matches and add a highlight to each one
                     for match in matches:
                         # Add instance page to list
                         curr_instance_pages.append(page_num + 1)
 
                         # Add instance of DOI
-                        curr_DOIs.append(doc)
+                        curr_DOIs.append(process_doc_name(doc))
 
                         # Add word to list
                         curr_key_values.append(word)
